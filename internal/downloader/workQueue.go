@@ -64,13 +64,13 @@ func (rtData *RuntimeData) doQueueStep() {
 
 	dateTime := selected.Created.Format("2006-01-02 15_04_05")
 
-	folderName := fmt.Sprintf("%s/%s - %s/%s - %s - %s", viper.GetString("output_dir"), sanitize.BaseName(selected.SubredditID), sanitize.BaseName(selected.SubredditName), sanitize.BaseName(dateTime), sanitize.BaseName(selected.ID), sanitize.BaseName(selected.Title))
+	folderName := fmt.Sprintf("%s"+string(os.PathSeparator)+"%s - %s"+string(os.PathSeparator)+"%s - %s - %s", viper.GetString("output_dir"), sanitize.BaseName(selected.SubredditID), sanitize.BaseName(selected.SubredditName), sanitize.BaseName(dateTime), sanitize.BaseName(selected.ID), sanitize.BaseName(TruncateString(selected.Title, 10)))
 
 	os.MkdirAll(folderName, os.ModePerm)
 
 	encoded, _ := json.Marshal(selected)
 
-	os.WriteFile(fmt.Sprintf("%s/post.json", folderName), encoded, os.ModePerm)
+	os.WriteFile(fmt.Sprintf("%s"+string(os.PathSeparator)+"post.json", folderName), encoded, os.ModePerm)
 
 	if selected.URL != "" {
 		link := selected.URL
@@ -80,6 +80,23 @@ func (rtData *RuntimeData) doQueueStep() {
 		link := fmt.Sprintf("https://reddit.com%s", selected.Permalink)
 		dlLink(folderName, link)
 	}
+}
+
+func TruncateString(str string, length int) string {
+	if length <= 0 {
+		return ""
+	}
+
+	truncated := ""
+	count := 0
+	for _, char := range str {
+		truncated += string(char)
+		count++
+		if count >= length {
+			break
+		}
+	}
+	return truncated
 }
 
 func dlLink(folderName string, link string) {
@@ -99,7 +116,7 @@ func dlLink(folderName string, link string) {
 	}
 	defer downloadResult.Close()
 
-	ytDlFilePath := fmt.Sprintf("%s/media.%s", folderName, result.Info.Ext)
+	ytDlFilePath := fmt.Sprintf("%s"+string(os.PathSeparator)+"media.%s", folderName, result.Info.Ext)
 
 	f, err := os.Create(ytDlFilePath)
 	if err != nil {

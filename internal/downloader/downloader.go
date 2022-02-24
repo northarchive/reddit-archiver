@@ -34,7 +34,7 @@ func Run() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	saveFileName := fmt.Sprintf("%s/savefile.json", viper.GetString("output_dir"))
+	saveFileName := fmt.Sprintf("%s%ssavefile.json", viper.GetString("output_dir"), string(os.PathSeparator))
 
 	client, _ := reddit.NewReadonlyClient()
 

@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/northarchive/reddit-archiver/internal/downloader"
 	"github.com/spf13/viper"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -20,13 +21,13 @@ var startCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(startCmd)
 
-	viper.SetDefault("output_dir", "./redditArchive")
+	viper.SetDefault("output_dir", "."+string(os.PathSeparator)+"redditArchive")
 
-	startCmd.Flags().StringP("out", "o", "./redditArchive", "Output directory")
+	startCmd.Flags().StringP("out", "o", "."+string(os.PathSeparator)+"redditArchive", "Output directory")
 	viper.BindPFlag("output_dir", startCmd.Flags().Lookup("out"))
 
-	viper.SetDefault("subreddit_list_file", "./list.txt")
+	viper.SetDefault("subreddit_list_file", "."+string(os.PathSeparator)+"list.txt")
 
-	startCmd.Flags().StringP("subreddit_list", "l", "./list.txt", "File with newline-seperated list of subreddits")
+	startCmd.Flags().StringP("subreddit_list", "l", "."+string(os.PathSeparator)+"list.txt", "File with newline-seperated list of subreddits")
 	viper.BindPFlag("subreddit_list_file", startCmd.Flags().Lookup("subreddit_list"))
 }
